@@ -1,0 +1,41 @@
+Bootstrap: docker
+From: ubuntu:22.04
+
+%post
+    # Install needed packages
+    export DEBIAN_FRONTEND=noninteractive
+    apt update
+    apt full-upgrade -y
+    apt install wget unzip python3-pip -y 
+    
+    # Upgrade pip
+    pip3 install --upgrade pip setuptools wheel
+    
+    # Install pytroch with pip
+    pip3 install torch==2.2.2 torchvision==0.17.2 torchaudio==2.2.2 --index-url https://download.pytorch.org/whl/rocm5.7
+    
+    wget https://github.com/Looong01/pyg-rocm-build/releases/download/5/torch-2.2-rocm-5.7-py310-linux_x86_64.zip
+    unzip torch-2.2-rocm-5.7-py310-linux_x86_64.zip
+    
+    pip3 install torch-2.2-rocm-5.7-py310-linux_x86_64/*
+    
+    rm -r torch-2.2-rocm-5.7-py310-linux_x86_64/ torch-2.2-rocm-5.7-py310-linux_x86_64.zip
+    
+    pip3 install fairchem-core
+
+
+
+%help
+    Container with AMD GPU support and AMD GPU example(s) built on Ubuntu 20.04
+    See *hipcc --version* to see what version is installed
+    
+    In order to test GPU functionality...
+    
+    Local:
+    singularity exec --rocm <CONTAINER_NAME> hello_world_gpu
+    
+    GPU:
+    srun -n 1 singularity exec --rocm <CONTAINER_NAME> hello_world_gpu
+
+
+
